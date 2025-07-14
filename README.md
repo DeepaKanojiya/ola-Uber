@@ -133,3 +133,81 @@ The request body must be a JSON object with the following structure:
 - Both fields are required.
 - The email must be valid and registered.
 - On success, a JWT token is returned for authentication.
+
+---
+
+# User Profile Endpoint Documentation
+
+## Endpoint
+
+`GET /users/profile`
+
+## Description
+
+Returns the profile information of the authenticated user. Requires a valid JWT token in the `Authorization` header.
+
+## Request Headers
+
+- `Authorization: Bearer <jwt_token>`
+
+## Responses
+
+- **200 OK**
+  - Returns the user's profile data.
+  - Response body:
+    ```
+    {
+      "user": { ...userObject }
+    }
+    ```
+
+- **401 Unauthorized**
+  - Missing or invalid token.
+  - Response body:
+    ```
+    {
+      "error": "Unauthorized"
+    }
+    ```
+
+## Notes
+- This endpoint is protected and requires authentication.
+
+---
+
+# User Logout Endpoint Documentation
+
+## Endpoint
+
+`GET /users/logout`
+
+## Description
+
+Logs out the authenticated user. Requires a valid JWT token in the `Authorization` header. Typically, this will invalidate the user's session on the server (if implemented).
+
+## Request Headers
+
+- `Authorization: Bearer <jwt_token>`
+
+## Responses
+
+- **200 OK**
+  - Logout successful.
+  - Response body:
+    ```
+    {
+      "message": "Logout successful"
+    }
+    ```
+
+- **401 Unauthorized**
+  - Missing or invalid token.
+  - Response body:
+    ```
+    {
+      "error": "Unauthorized"
+    }
+    ```
+
+## Notes
+- This endpoint is protected and requires authentication.
