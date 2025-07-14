@@ -1,9 +1,12 @@
 import express from "express";
 import cors from "cors";
 import db from "./db/db.js";
-import userRoutes from "./routes/user.routes.js";
 import "dotenv/config";
 import cookieParser from "cookie-parser";
+import userRoutes from "./routes/user.routes.js";
+import captainRoutes from "./routes/captain.routes.js"
+
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -18,6 +21,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/users", userRoutes);
+app.use("/captains",captainRoutes)
 
 app.listen(port, () => {
   console.log("server is running port " + port);

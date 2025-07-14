@@ -211,3 +211,83 @@ Logs out the authenticated user. Requires a valid JWT token in the `Authorizatio
 
 ## Notes
 - This endpoint is protected and requires authentication.
+
+---
+
+# Captain Registration Endpoint Documentation
+
+## Endpoint
+
+`POST /captains/register`
+
+## Description
+
+Registers a new captain (driver) in the system. This endpoint accepts captain and vehicle details, validates them, hashes the password, creates a new captain, and returns the created captain data (and/or token if implemented).
+
+## Request Body
+
+The request body must be a JSON object with the following structure:
+
+```
+{
+  "fullname": {
+    "firstname": "<string, min 3 chars>",
+    "lastname": "<string, min 3 chars>"
+  },
+  "email": "<string, valid email>",
+  "password": "<string, min 6 chars>",
+  "vehicle": {
+    "color": "<string, min 3 chars>",
+    "plate": "<string, min 3 chars>",
+    "capacity": "<number, min 1>",
+    "vehicleType": "car|motorcycle|auto"
+  }
+}
+```
+
+### Example
+
+```
+{
+  "fullname": {
+    "firstname": "Jane",
+    "lastname": "Smith"
+  },
+  "email": "jane.smith@example.com",
+  "password": "securepass",
+  "vehicle": {
+    "color": "Red",
+    "plate": "XYZ1234",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}
+```
+
+## Responses
+
+- **201 Created**
+  - Captain registered successfully.
+  - Response body (example):
+    ```
+    {
+      "captain": { ...captainObject }
+    }
+    ```
+
+- **400 Bad Request**
+  - Validation failed. Returns an array of error messages.
+  - Response body:
+    ```
+    {
+      "errors": [
+        { "msg": "Error message", ... }
+      ]
+    }
+    ```
+
+## Notes
+- All fields are required.
+- The email must be unique and valid.
+- The password is stored securely (hashed).
+- Vehicle type must be one of: `car`, `motorcycle`, or `auto`.
