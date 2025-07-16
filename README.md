@@ -214,80 +214,144 @@ Logs out the authenticated user. Requires a valid JWT token in the `Authorizatio
 
 ---
 
-# Captain Registration Endpoint Documentation
+# Captain API Endpoints Documentation
 
-## Endpoint
+## 1. Register Captain
 
-`POST /captains/register`
+### Endpoint
+`POST /captain/register`
 
-## Description
-
-Registers a new captain (driver) in the system. This endpoint accepts captain and vehicle details, validates them, hashes the password, creates a new captain, and returns the created captain data (and/or token if implemented).
-
-## Request Body
-
-The request body must be a JSON object with the following structure:
-
-```
+### Request Body
+```jsonc
 {
   "fullname": {
-    "firstname": "<string, min 3 chars>",
-    "lastname": "<string, min 3 chars>"
+    "firstname": "Jane", // string, required, min 3 chars
+    "lastname": "Smith"  // string, required, min 3 chars
   },
-  "email": "<string, valid email>",
-  "password": "<string, min 6 chars>",
+  "email": "jane.smith@example.com", // string, required, valid email, unique
+  "password": "securepass",           // string, required, min 6 chars
   "vehicle": {
-    "color": "<string, min 3 chars>",
-    "plate": "<string, min 3 chars>",
-    "capacity": "<number, min 1>",
-    "vehicleType": "car|motorcycle|auto"
+    "color": "Red",                  // string, required, min 3 chars
+    "plate": "XYZ1234",              // string, required, min 3 chars
+    "capacity": 4,                    // number, required, min 1
+    "vehicleType": "car"             // string, required, one of: 'car', 'motorcycle', 'auto'
   }
 }
 ```
 
-### Example
-
-```
+### Success Response
+- **Status:** 201 Created
+```jsonc
 {
-  "fullname": {
-    "firstname": "Jane",
-    "lastname": "Smith"
-  },
-  "email": "jane.smith@example.com",
-  "password": "securepass",
-  "vehicle": {
-    "color": "Red",
-    "plate": "XYZ1234",
-    "capacity": 4,
-    "vehicleType": "car"
+  "token": "<jwt_token>", // JWT token for authentication
+  "captain": {
+    // Captain object with all details except password
   }
 }
 ```
 
-## Responses
+### Error Responses
+- **Status:** 400 Bad Request (Validation or duplicate email)
+```jsonc
+{
+  "errors": [
+    { "msg": "Error message", ... }
+  ]
+}
+```
+- **Status:** 400 Bad Request (Captain already exists)
+```jsonc
+{
+  "message": "Captain already exist"
+}
+```
 
-- **201 Created**
-  - Captain registered successfully.
-  - Response body (example):
-    ```
-    {
-      "captain": { ...captainObject }
-    }
-    ```
+## 2. Login Captain
 
-- **400 Bad Request**
-  - Validation failed. Returns an array of error messages.
-  - Response body:
-    ```
-    {
-      "errors": [
-        { "msg": "Error message", ... }
-      ]
-    }
-    ```
+### Endpoint
+`POST /captain/login`
 
-## Notes
-- All fields are required.
-- The email must be unique and valid.
-- The password is stored securely (hashed).
-- Vehicle type must be one of: `car`, `motorcycle`, or `auto`.
+### Request Body
+```jsonc
+{
+  "email": "jane.smith@example.com", // string, required, valid email
+  "password": "securepass"           // string, required, min 6 chars
+}
+```
+
+### Success Response
+- **Status:** 200 OK
+```jsonc
+{
+  "token": "<jwt_token>", // JWT token for authentication
+  "captain": {
+    // Captain object with all details except password
+  }
+}
+```
+
+### Error Responses
+- **Status:** 400 Bad Request (Validation)
+```jsonc
+{
+  "errors": [
+    { "msg": "Error message", ... }
+  ]
+}
+```
+- **Status:** 401 Unauthorized (Invalid credentials)
+```jsonc
+{
+  "message": "Invalid email or password"
+}
+```
+
+## 3. Get Captain Profile
+
+### Endpoint
+`GET /captain/profile`
+
+### Headers
+- `Authorization: Bearer <jwt_token>` // required
+
+### Success Response
+- **Status:** 200 OK
+```jsonc
+{
+  "captain": {
+    // Captain object for the authenticated user
+  }
+}
+```
+
+### Error Response
+- **Status:** 401 Unauthorized
+```jsonc
+{
+  "error": "Unauthorized"
+}
+```
+
+## 4. Logout Captain
+
+### Endpoint
+`GET /captain/logout`
+
+### Headers
+- `Authorization: Bearer <jwt_token>` // required
+
+### Success Response
+- **Status:** 200 OK
+```jsonc
+{
+  "message": "Logged out successfully"
+}
+```
+
+### Error Response
+- **Status:** 401 Unauthorized
+```jsonc
+{
+  "message": "Unauthorized"
+}
+```
